@@ -296,7 +296,8 @@ npm run dev                    # http://localhost:3000
 | `ADMIN_SESSION_SECRET` | 64 hex-символа для подписи cookie сессии |
 | `NEXT_PUBLIC_SITE_URL` | Canonical, OG, `robots.txt`, `sitemap.xml` |
 
-Проверки: `npx tsc --noEmit`, `npm run lint`, `npm test`, `npm run build`.
+Проверки: `npx next typegen`, `npx tsc --noEmit`, `npm run lint`, `npm test`, `npm run build`.
+`typegen` нужен в чистом клоне: `LayoutProps` и типы маршрутов генерирует сам Next.
 Тесты покрывают логику записи — сетку слотов, конфликты, лид-тайм, телефон, коды и rate limit —
 без базы и без сервера: модуль `booking.ts` намеренно чистый.
 
