@@ -1,26 +1,842 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ─────────────────────────────────────────────────────────────
+   VESPERA / Obsidian Milk
+   ───────────────────────────────────────────────────────────── */
+@theme {
+  /* 1. Палитра BRIEF — единственные «сырые» цвета */
+  --color-ink: #0b0809;
+  --color-plum: #181016;
+  --color-smoke: #2a1e25;
+  --color-milk: #f4efe7;
+  --color-sand: #ded3c4;
+  --color-ember: #e8794a;
+  --color-pearl: #e8e1f0;
+
+  /* 2. Производные ember: только состояния и контраст */
+  --color-ember-light: #f08a5e; /* hover заливки · 8.07:1 с ink */
+  --color-ember-press: #d2603a; /* active заливки · 5.20:1 с ink */
+  --color-ember-deep: #a6431e; /* текст на молоке · 5.33:1 */
+
+  /* 3. Семантика — тёмная тема по умолчанию */
+  --color-bg: var(--color-ink);
+  --color-surface: var(--color-plum);
+  --color-surface-hover: var(--color-smoke);
+  --color-text: var(--color-milk); /* 17.43:1 */
+  --color-text-muted: #8a8279; /* sand 60% над ink · 5.27:1 */
+  --color-text-disabled: rgb(244 239 231 / 0.38);
+  --color-accent: var(--color-ember); /* заливка CTA */
+  --color-accent-hover: var(--color-ember-light);
+  --color-accent-press: var(--color-ember-press);
+  --color-accent-text: var(--color-ember); /* текст/цифра · 6.90:1 */
+  --color-on-accent: var(--color-ink); /* ink на ember · 6.90:1 */
+  --color-focus: var(--color-ember);
+  --color-line: rgb(244 239 231 / 0.14); /* декоративная волосяная */
+  --color-line-strong: rgb(244 239 231 / 0.24); /* усиленный разделитель */
+  --color-control-border: rgb(244 239 231 / 0.4); /* граница контролов · 3.41:1 */
+
+  /* 4. Бумажная тема (молочные секции) */
+  --color-paper: var(--color-milk);
+  --color-paper-surface: #eae3d8; /* ink на ней · 15.65:1 */
+  --color-paper-hover: #e1d9cc;
+  --color-paper-text: var(--color-ink);
+  --color-paper-muted: #5a5754; /* 6.27:1 на milk */
+  --color-paper-line: rgb(11 8 9 / 0.14);
+  --color-paper-line-strong: rgb(11 8 9 / 0.24);
+  --color-paper-control-border: rgb(11 8 9 / 0.48); /* 3.42:1 на milk */
+
+  /* 5. Типографика — флюидная шкала */
+  --text-display: clamp(3.2rem, 11vw, 11rem);
+  --text-display--line-height: 0.92;
+  --text-display--letter-spacing: -0.03em;
+
+  --text-h1: clamp(2.6rem, 6vw, 5rem);
+  --text-h1--line-height: 0.96;
+  --text-h1--letter-spacing: -0.03em;
+
+  --text-h2: clamp(2rem, 4vw, 3.4rem);
+  --text-h2--line-height: 1;
+  --text-h2--letter-spacing: -0.02em;
+
+  --text-h3: clamp(1.3rem, 2vw, 1.8rem);
+  --text-h3--line-height: 1.12;
+  --text-h3--letter-spacing: -0.01em;
+
+  --text-lead: clamp(1.125rem, 1.6vw, 1.375rem);
+  --text-lead--line-height: 1.5;
+
+  --text-body: clamp(1rem, 1.15vw, 1.125rem);
+  --text-body--line-height: 1.62;
+
+  --text-small: 0.8125rem;
+  --text-small--line-height: 1.5;
+
+  --text-micro: 0.6875rem;
+  --text-micro--line-height: 1.2;
+  --text-micro--letter-spacing: 0.18em;
+
+  --text-quote: clamp(1.5rem, 2.4vw, 2.25rem);
+  --text-quote--line-height: 1.24;
+  --text-quote--letter-spacing: 0.005em;
+
+  --text-price: 1.25rem;
+  --text-price--line-height: 1.2;
+
+  /* 6. Вертикальный ритм и поля */
+  --spacing-section: clamp(96px, 12vw, 200px);
+  --spacing-section-sm: clamp(64px, 8vw, 120px);
+  --spacing-gutter: clamp(20px, 5vw, 80px);
+  --spacing-stack: clamp(32px, 4vw, 56px);
+  --spacing-block: clamp(24px, 3vw, 40px);
+  --spacing-inline: clamp(16px, 2vw, 24px);
+  --spacing-hair: 1px;
+
+  /* 7. Радиусы — только три */
+  --radius-card: 2px;
+  --radius-field: 2px;
+  --radius-pill: 999px;
+
+  /* 8. Контейнеры и меры строки */
+  --container-page: 90rem; /* 1440 — ширина контента, поля снаружи */
+  --container-measure: 34rem; /* 544 — тело, ≈58–64 знака */
+  --container-form: 40rem; /* 640 — колонка записи */
+  --container-note: 22rem; /* 352 — правые примечания */
+
+  /* 9. Брейкпоинты: 360 / 768 / 1024 / 1440 / 1920 */
+  --breakpoint-xs: 22.5rem;
+  --breakpoint-3xl: 120rem;
+
+  /* 10. Движение */
+  --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-brand-in: cubic-bezier(0.64, 0, 0.78, 0);
+  --ease-loop: cubic-bezier(0.65, 0, 0.35, 1);
+  --animate-marquee: marquee 48s linear infinite;
 }
 
+/* Шрифты приходят из next/font переменными — поэтому inline */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-unbounded);
+  --font-sans: var(--font-onest);
+  --font-quote: var(--font-cormorant);
+  --default-font-family: var(--font-onest);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Не-неймспейсные токены: в v4 у z-index и длительностей нет утилит */
+:root {
+  --z-base: 0;
+  --z-sticky: 10; /* стек услуг: 10 + i */
+  --z-progress: 30;
+  --z-nav: 50;
+  --z-lantern: 55;
+  --z-grain: 60;
+  --z-toast: 70;
+  --z-intro: 100;
+
+  --dur-micro: 120ms;
+  --dur-base: 240ms;
+  --dur-large: 420ms;
+  --dur-reveal: 700ms;
+  --dur-intro: 900ms;
+  --dur-marquee: 48s;
+
+  --stack-top: 112px; /* верх первого липкого слота */
+  --stack-step: 18px; /* сдвиг каждого следующего */
+
+  /* Пауза загрузки: пока играет интро, hero ждёт 480 мс */
+  --intro-lag: 0ms;
+
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+html[data-intro="play"] {
+  --intro-lag: 480ms;
+}
+
+/* Блокировка скролла только там, где интро реально отрендерено.
+   Иначе атрибут, выставленный bootstrap-скриптом в корневом layout,
+   навсегда запирал бы /admin и /admin/login. */
+html[data-intro="play"]:has(.intro) {
+  overflow: hidden;
+}
+
+/* Бумажная тема: переопределяем семантику, компоненты не меняются */
+[data-theme="paper"] {
+  color-scheme: light;
+  --color-bg: var(--color-milk);
+  --color-surface: var(--color-paper-surface);
+  --color-surface-hover: var(--color-paper-hover);
+  --color-text: var(--color-ink);
+  --color-text-muted: var(--color-paper-muted);
+  --color-text-disabled: rgb(11 8 9 / 0.38);
+  --color-accent-text: var(--color-ember-deep);
+  --color-focus: var(--color-ember-deep);
+  --color-line: var(--color-paper-line);
+  --color-line-strong: var(--color-paper-line-strong);
+  --color-control-border: var(--color-paper-control-border);
+}
+
+@keyframes marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ─────────────────────────────────────────────────────────────
+   База
+   ───────────────────────────────────────────────────────────── */
+@layer base {
+  html {
+    background: var(--color-bg);
+    color-scheme: dark;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-smoke) transparent;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100svh;
+    font-family: var(--font-sans);
+    background: var(--color-bg);
+    color: var(--color-text);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+
+  body,
+  main,
+  section,
+  footer {
+    background-color: transparent;
+  }
+
+  ::selection {
+    background-color: var(--color-ember);
+    color: var(--color-ink);
+  }
+
+  a {
+    color: inherit;
+    text-underline-offset: 4px;
+  }
+
+  button,
+  [role="button"] {
+    cursor: pointer;
+  }
+
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 3px;
+    border-radius: inherit;
+  }
+
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  h1,
+  h2,
+  h3 {
+    hyphens: none;
+    text-wrap: pretty;
+  }
+
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  /* Lenis: разметка не должна менять высоту документа */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis:not(.lenis-autoToggle).lenis-stopped {
+    overflow: clip;
+  }
+
+  .lenis [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-smooth iframe {
+    pointer-events: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Служебное
+   ───────────────────────────────────────────────────────────── */
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: calc(var(--z-intro) + 1);
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 20px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-field);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--text-small);
+  transform: translateY(calc(-100% - 16px));
+  transition: transform var(--dur-base) var(--ease-brand);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-grain);
+  background-image: var(--grain);
+  background-size: 180px 180px;
+  opacity: 0.04;
+  pointer-events: none;
+}
+
+.lantern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-lantern);
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--color-ember) 9%, transparent) 0%,
+    color-mix(in srgb, var(--color-ember) 3%, transparent) 46%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-brand);
+  pointer-events: none;
+  will-change: transform;
+  mix-blend-mode: screen;
+}
+
+@media (max-width: 1023px), (pointer: coarse) {
+  .lantern {
+    display: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Интро
+   ───────────────────────────────────────────────────────────── */
+.intro {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-intro);
+  background: var(--color-ink);
+  place-items: center;
+  overflow: hidden;
+}
+
+html[data-intro="play"] .intro,
+html[data-intro="skip"] .intro {
+  display: grid;
+}
+
+html[data-intro="play"] .intro {
+  animation: intro-curtain var(--dur-large) 480ms var(--ease-brand-in) forwards;
+}
+
+html[data-intro="skip"] .intro {
+  animation: intro-fade 180ms linear forwards;
+}
+
+.intro__word {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-display);
+  font-weight: 200;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  letter-spacing: 0.42em;
+  margin-right: -0.42em;
+  text-transform: uppercase;
+  color: var(--color-milk);
+  animation: intro-word var(--dur-reveal) var(--ease-brand) both;
+}
+
+.intro__ghost {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  width: min(480px, 70vw);
+  aspect-ratio: 1;
+  opacity: 0;
+  animation: intro-ghost var(--dur-reveal) 200ms var(--ease-brand) both;
+}
+
+@keyframes intro-word {
+  from {
+    clip-path: inset(0 0 100% 0);
+    opacity: 0;
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+@keyframes intro-ghost {
+  from {
+    scale: 0.92;
+    opacity: 0;
+  }
+  to {
+    scale: 1;
+    opacity: 0.25;
+  }
+}
+
+@keyframes intro-curtain {
+  from {
+    clip-path: inset(0 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 100% 0);
+  }
+}
+
+@keyframes intro-fade {
+  to {
+    opacity: 0;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Загрузка hero: CSS, чтобы сцена была верной до гидратации
+   ───────────────────────────────────────────────────────────── */
+.hero-line {
+  display: block;
+  /* Запас справа: у Unbounded широкие боковые просветы глифов, иначе
+     последняя «А» срезается маской на крупных кеглях. */
+  overflow: hidden;
+  padding-inline-end: 0.08em;
+  margin-inline-end: -0.08em;
+}
+
+.hero-line > span {
+  display: block;
+  animation: hero-line var(--dur-reveal) var(--ease-brand) both;
+}
+
+.hero-line:nth-child(2) > span {
+  animation-delay: calc(var(--intro-lag) + 70ms);
+}
+
+.hero-line:nth-child(3) > span {
+  animation-delay: calc(var(--intro-lag) + 140ms);
+}
+
+.hero-line:nth-child(4) > span {
+  animation-delay: calc(var(--intro-lag) + 210ms);
+}
+
+.hero-rise {
+  animation: hero-rise var(--dur-large) var(--ease-brand) both;
+  animation-delay: var(--intro-lag);
+}
+
+.hero-rise--late {
+  animation-delay: calc(var(--intro-lag) + 420ms);
+}
+
+.hero-rise--last {
+  animation-delay: calc(var(--intro-lag) + 560ms);
+}
+
+@keyframes hero-line {
+  from {
+    transform: translate3d(0, 110%, 0);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.orb-canvas {
+  opacity: 0;
+  transition: opacity var(--dur-reveal) var(--ease-brand);
+}
+
+.orb-canvas[data-ready="true"] {
+  opacity: 1;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Артефакты §8: всё изображение — CSS
+   ───────────────────────────────────────────────────────────── */
+.plate-pearl {
+  background:
+    radial-gradient(
+      46% 46% at var(--plate-x, 30%) var(--plate-y, 24%),
+      color-mix(in srgb, var(--color-milk) 55%, transparent),
+      transparent 62%
+    ),
+    conic-gradient(
+      from var(--plate-angle, 210deg) at 62% 58%,
+      color-mix(in srgb, var(--color-ember) 30%, transparent) 0deg,
+      color-mix(in srgb, var(--color-pearl) 42%, transparent) 90deg,
+      color-mix(in srgb, var(--color-plum) 0%, transparent) 165deg,
+      color-mix(in srgb, var(--color-milk) 20%, transparent) 245deg,
+      color-mix(in srgb, var(--color-ember) 18%, transparent) 330deg,
+      color-mix(in srgb, var(--color-ember) 30%, transparent) 360deg
+    ),
+    linear-gradient(160deg, var(--color-plum) 0%, var(--color-ink) 100%);
+  filter: blur(0.5px) saturate(1.05);
+}
+
+.plate-pearl[data-plate="0"] {
+  --plate-x: 30%;
+  --plate-y: 24%;
+  --plate-angle: 210deg;
+}
+
+.plate-pearl[data-plate="1"] {
+  --plate-x: 70%;
+  --plate-y: 30%;
+  --plate-angle: 250deg;
+}
+
+.plate-pearl[data-plate="2"] {
+  --plate-x: 50%;
+  --plate-y: 22%;
+  --plate-angle: 170deg;
+}
+
+.plate-pearl[data-plate="3"] {
+  --plate-x: 34%;
+  --plate-y: 32%;
+  --plate-angle: 290deg;
+}
+
+.plate-pearl[data-plate="4"] {
+  --plate-x: 66%;
+  --plate-y: 26%;
+  --plate-angle: 190deg;
+}
+
+.plate-pearl[data-plate="5"] {
+  --plate-x: 48%;
+  --plate-y: 30%;
+  --plate-angle: 240deg;
+}
+
+.plate-kind {
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.plate-kind::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--grain);
+  background-size: 180px 180px;
+  opacity: 0.06;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.plate-kind::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  box-shadow: inset 0 0 0 1px rgb(244 239 231 / 0.1);
+  pointer-events: none;
+}
+
+.plate-tone--before {
+  background:
+    radial-gradient(
+      58% 44% at 50% 32%,
+      color-mix(in srgb, var(--color-smoke) 72%, var(--color-sand)) 0%,
+      color-mix(in srgb, var(--color-smoke) 92%, transparent) 46%,
+      var(--color-ink) 100%
+    ),
+    linear-gradient(200deg, color-mix(in srgb, var(--color-plum) 90%, transparent), var(--color-ink));
+  filter: saturate(0.72) contrast(1.02) brightness(0.94);
+}
+
+.plate-tone--after {
+  background:
+    radial-gradient(
+      58% 44% at 50% 32%,
+      color-mix(in srgb, var(--color-milk) 85%, transparent) 0%,
+      color-mix(in srgb, var(--color-ember) 35%, transparent) 38%,
+      transparent 76%
+    ),
+    radial-gradient(
+      80% 80% at 30% 80%,
+      color-mix(in srgb, var(--color-pearl) 18%, transparent),
+      transparent 60%
+    ),
+    linear-gradient(180deg, var(--color-plum) 0%, var(--color-ink) 100%);
+}
+
+.plate-figure {
+  background: linear-gradient(180deg, var(--color-plum) 0%, var(--color-ink) 100%);
+}
+
+.plate-figure__silhouette {
+  position: absolute;
+  left: var(--figure-x, 50%);
+  top: 34%;
+  width: 46%;
+  height: 66%;
+  translate: -50% -50%;
+  background-image:
+    radial-gradient(
+      closest-side at 50% 20%,
+      color-mix(in srgb, var(--color-milk) 20%, transparent),
+      transparent 74%
+    ),
+    radial-gradient(
+      closest-side at 50% 88%,
+      color-mix(in srgb, var(--color-milk) 14%, transparent),
+      transparent 80%
+    );
+  filter: blur(7px);
+}
+
+.plate-figure[data-figure="0"] {
+  --figure-x: 38%;
+}
+
+.plate-figure[data-figure="1"] {
+  --figure-x: 46%;
+}
+
+.plate-figure[data-figure="2"] {
+  --figure-x: 54%;
+}
+
+.plate-figure[data-figure="3"] {
+  --figure-x: 62%;
+}
+
+.plate-figure__horizon {
+  position: absolute;
+  inset-inline: 0;
+  top: 72%;
+  height: 1px;
+  background: var(--color-line);
+}
+
+.plate-paper {
+  background-color: var(--color-milk);
+  background-image:
+    repeating-linear-gradient(0deg, rgb(11 8 9 / 0.05) 0 1px, transparent 1px 24px),
+    repeating-linear-gradient(90deg, rgb(11 8 9 / 0.05) 0 1px, transparent 1px 24px);
+}
+
+/* Фолбэк 3D (§7.6): иридесцентная жемчужина на закате, целиком из градиентов. */
+.orb-fallback {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 46%, var(--color-plum) 0%, var(--color-ink) 72%),
+    var(--color-ink);
+  box-shadow: 0 30px 90px -46px color-mix(in srgb, var(--color-ember) 42%, transparent);
+}
+
+/* Иридесцентный обод: conic-градиент, обрезанный маской до тонкой кромки. */
+.orb-fallback::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: conic-gradient(
+    from 200deg at 50% 50%,
+    transparent 0deg,
+    color-mix(in srgb, var(--color-ember) 92%, transparent) 22deg,
+    color-mix(in srgb, var(--color-pearl) 96%, transparent) 62deg,
+    color-mix(in srgb, var(--color-milk) 58%, transparent) 106deg,
+    transparent 148deg,
+    color-mix(in srgb, var(--color-pearl) 78%, transparent) 206deg,
+    color-mix(in srgb, var(--color-sand) 46%, transparent) 250deg,
+    transparent 296deg
+  );
+  -webkit-mask-image: radial-gradient(
+    circle at 50% 50%,
+    transparent 66%,
+    #000 86%,
+    #000 97%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    circle at 50% 50%,
+    transparent 66%,
+    #000 86%,
+    #000 97%,
+    transparent 100%
+  );
+  filter: blur(0.4px);
+}
+
+/* Блик: маленький, пересвеченный, с холодным отражением снизу. */
+.orb-fallback::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(
+      circle at 33% 24%,
+      rgb(255 252 246 / 0.9) 0%,
+      rgb(244 239 231 / 0.35) 2.2%,
+      transparent 6.5%
+    ),
+    radial-gradient(
+      circle at 66% 76%,
+      color-mix(in srgb, var(--color-pearl) 30%, transparent) 0%,
+      transparent 9%
+    ),
+    radial-gradient(
+      circle at 50% 50%,
+      transparent 76%,
+      color-mix(in srgb, var(--color-pearl) 14%, transparent) 97%
+    );
+  filter: blur(0.8px);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Маркиза
+   ───────────────────────────────────────────────────────────── */
+.marquee-mask {
+  mask-image: linear-gradient(90deg, transparent 0, black 80px, black calc(100% - 80px), transparent 100%);
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    black 80px,
+    black calc(100% - 80px),
+    transparent 100%
+  );
+}
+
+.marquee {
+  overflow: hidden;
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: var(--animate-marquee);
+}
+
+.marquee-track[data-paused="true"],
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+
+@media (max-width: 767px) {
+  .marquee-track {
+    animation-duration: 64s;
+  }
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+/* Токен `--spacing-block` перехватывает утилиту `inline-block`
+   (Tailwind читает её как `inline-size: var(--spacing-block)`),
+   поэтому display задаём отдельным классом. */
+@layer utilities {
+  .u-inline-block {
+    display: inline-block;
+  }
+}
+
+.masters-track[data-dragging="true"] {
+  scroll-snap-type: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Reduced motion: контент доступен, движение выключено
+   ───────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .intro,
+  html[data-intro="play"] .intro,
+  html[data-intro="skip"] .intro {
+    display: none !important;
+  }
+
+  .hero-line > span,
+  .hero-rise,
+  .hero-rise--late,
+  .hero-rise--last {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .marquee {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+  }
+
+  .marquee > .marquee-track {
+    animation: none;
+  }
+
+  .marquee > .marquee-track > * {
+    scroll-snap-align: start;
+  }
+
+  .orb-canvas {
+    transition: none;
+  }
+
+  .lantern {
+    display: none;
+  }
 }
