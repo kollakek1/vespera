@@ -23,7 +23,9 @@ function Word({
   const reduced = useReducedMotionPreference();
   const start = index / total;
   const end = Math.min(1, start + 1 / total);
-  const opacity = useTransform(progress, [start, end], [0.18, 1]);
+  // 0.55, а не 0.18: до проявления текст должен оставаться читаемым.
+  // Крупный кегль требует контраста 3:1, при 0.18 он был 1.49.
+  const opacity = useTransform(progress, [start, end], [0.55, 1]);
 
   if (reduced) return <span>{children}</span>;
 

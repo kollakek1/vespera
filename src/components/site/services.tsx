@@ -54,7 +54,6 @@ function ServiceCard({
           event.preventDefault();
           open();
         }}
-        aria-label={`${service.name}, ${service.durationMin} минут, ${formatPrice(service.priceRub)}. Записаться`}
         className="group relative block overflow-hidden rounded-card border border-line bg-surface transition-colors duration-[240ms] ease-brand hover:bg-surface-hover focus-visible:z-30 md:grid md:h-[clamp(280px,34vw,380px)] md:grid-cols-12"
       >
         <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 p-5 md:col-span-8 md:grid-cols-8 md:items-center md:p-8">
@@ -94,6 +93,9 @@ function ServiceCard({
             />
           )}
         </div>
+
+        {/* Имя ссылки собирается из видимого текста: дублировать его в aria-label нельзя. */}
+        <span className="sr-only">Записаться</span>
       </a>
     </motion.div>
   );
