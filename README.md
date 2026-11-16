@@ -206,14 +206,14 @@ Compute засыпает, первый коннект обрывается по 
 
 ```mermaid
 flowchart LR
-  B[Браузер] -->|RSC + fetch| N[Next.js 16<br/>App Router]
-  N --> V[/api/booking/]
-  N --> D[/api/admin/*/]
-  V --> S[Слой хранения]
+  B["Браузер"] --> N["Next.js 16 App Router"]
+  N --> V["POST /api/booking"]
+  N --> D["/api/admin"]
+  V --> S["Слой хранения"]
   D --> S
-  S -->|DATABASE_URL есть| P[(Neon Postgres<br/>vespera_documents)]
-  S -->|локально| F[(data/*.json)]
-  N -->|use cache + revalidatePath| C[Кэш маршрутов]
+  S --> P["Neon Postgres"]
+  S --> F["data/*.json локально"]
+  N --> C["use cache"]
 ```
 
 Один интерфейс `StorageDriver` и две реализации: файловая для разработки и Postgres для прода.
@@ -222,20 +222,20 @@ flowchart LR
 ```mermaid
 sequenceDiagram
   participant G as Гость
-  participant A as POST /api/booking
+  participant A as API записи
   participant L as advisory lock
   participant DB as bookings
 
-  G->>A: serviceId, masterId, date, time
-  A->>A: zod + пересчёт цены на сервере
-  A->>L: BEGIN → lock(hashtext('bookings'))
+  G->>A: услуга, мастер, дата, время
+  A->>A: zod и пересчёт цены на сервере
+  A->>L: BEGIN и lock по имени документа
   L->>DB: SELECT data
-  A->>A: isSlotBusy(...)
+  A->>A: isSlotBusy
   alt слот занят
     A-->>G: 409 slot_taken
   else свободен
-    A->>DB: UPDATE → COMMIT
-    A-->>G: 201 + код VSP-XXXX
+    A->>DB: UPDATE и COMMIT
+    A-->>G: 201 и код брони
   end
 ```
 
