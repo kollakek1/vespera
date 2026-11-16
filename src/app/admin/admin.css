@@ -1,0 +1,54 @@
+/* Консоль студии: только то, чего нет в утилитах Tailwind. */
+
+.admin-root {
+  min-height: 100svh;
+}
+
+/* Курсор-фонарь — декоративный эффект лендинга; в рабочем инструменте он мешает. */
+body:has(.admin-root) .lantern {
+  display: none;
+}
+
+.admin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-smoke) transparent;
+  overscroll-behavior: contain;
+}
+
+.admin-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.admin-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-smoke);
+  border-radius: 0;
+}
+
+/* Таймлайн: карточки не должны ломать сетку при длинных именах. */
+.admin-timeline-card {
+  overflow: hidden;
+}
+
+.admin-timeline-card:focus-visible {
+  z-index: 5;
+}
+
+/* На тач-устройствах поднимаем рабочие контролы до 44px.
+   Карточки таймлайна не трогаем: у них высота задана длительностью. */
+@media (pointer: coarse) {
+  .admin-root header :is(button, select),
+  .admin-root aside :is(button, select),
+  .admin-root [role="dialog"] :is(button, select, input:not([type="checkbox"]), textarea),
+  .admin-root [role="dialog"] summary {
+    min-height: 44px;
+  }
+
+  .admin-select-option {
+    min-height: 44px;
+  }
+}
