@@ -1,0 +1,10 @@
+# Не отправлять на Vercel артефакты сборки, зависимости и локальные данные.
+# Прод собирается на стороне Vercel, база — Neon (DATABASE_URL).
+.next/
+.turbo/
+node_modules/
+data/
+.vercel/
+.env.local
+.env*.local
+*.tsbuildinfo
