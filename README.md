@@ -204,39 +204,37 @@ Compute засыпает, первый коннект обрывается по 
 
 ## 07 — Архитектура
 
-```mermaid
-flowchart LR
-  B["Браузер"] --> N["Next.js 16 App Router"]
-  N --> V["POST /api/booking"]
-  N --> D["/api/admin"]
-  V --> S["Слой хранения"]
-  D --> S
-  S --> P["Neon Postgres"]
-  S --> F["data/*.json локально"]
-  N --> C["use cache"]
+```text
+                        ┌───────────────────────────────┐
+   Браузер ────────────▶│   Next.js 16 · App Router     │
+                        └──────┬─────────────────┬──────┘
+                               │                 │
+                 POST /api/booking           /api/admin/*
+                               │                 │
+                               ▼                 ▼
+                        ┌───────────────────────────┐
+                        │       StorageDriver       │
+                        └────┬──────────────────┬───┘
+        DATABASE_URL есть    │                  │   локально
+                             ▼                  ▼
+                    ┌──────────────────┐  ┌────────────────┐
+                    │  Neon Postgres   │  │  data/*.json   │
+                    └──────────────────┘  └────────────────┘
 ```
 
 Один интерфейс `StorageDriver` и две реализации: файловая для разработки и Postgres для прода.
 Никакой ветки «а на проде иначе» в бизнес-логике нет.
 
-```mermaid
-sequenceDiagram
-  participant G as Гость
-  participant A as API записи
-  participant L as advisory lock
-  participant DB as bookings
-
-  G->>A: услуга, мастер, дата, время
-  A->>A: zod и пересчёт цены на сервере
-  A->>L: BEGIN и lock по имени документа
-  L->>DB: SELECT data
-  A->>A: isSlotBusy
-  alt слот занят
-    A-->>G: 409 slot_taken
-  else свободен
-    A->>DB: UPDATE и COMMIT
-    A-->>G: 201 и код брони
-  end
+```text
+Гость ──▶ POST /api/booking
+            │ zod-валидация запроса
+            │ цена и длительность — из каталога на сервере
+            ▼
+        BEGIN ──▶ pg_advisory_xact_lock('bookings')
+            │ SELECT data
+            │ isSlotBusy(...)
+            ├── занято ─────▶ ROLLBACK ──▶ 409 slot_taken
+            └── свободно ───▶ UPDATE ───▶ COMMIT ──▶ 201 + VSP-XXXX
 ```
 
 ---
